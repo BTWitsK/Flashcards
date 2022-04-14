@@ -3,9 +3,6 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        LinkedHashMap<String, String> cardMap = new LinkedHashMap<>();
-        LinkedHashMap<String, String> keyMap = new LinkedHashMap<>();
 
         System.out.println("Input the number of cards:");
         int cards = Integer.parseInt(scanner.nextLine());

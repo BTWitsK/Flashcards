@@ -9,7 +9,10 @@ public class FlashCards {
         IMPORT("import"),
         EXPORT("export"),
         ASK("ask"),
-        EXIT("exit");
+        EXIT("exit"),
+        LOG("log"),
+        HARDEST("hardest card"),
+        RESET("reset stats");
 
         final String userChoice;
 
@@ -128,5 +131,17 @@ public class FlashCards {
                 i++;
             }
         } while (i < rounds);
+    }
+
+    public void log() {
+        //TODO: implement
+    }
+
+    public void printHardestCard() {
+        //TODO: implement
+    }
+
+    public void resetStats() {
+        //TODO: implement
     }
 }

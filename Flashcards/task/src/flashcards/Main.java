@@ -16,9 +16,11 @@ public class Main {
                 case ASK -> cardDeck.getCards();
                 case IMPORT -> cardDeck.importCards();
                 case EXPORT -> cardDeck.exportCards();
+                case LOG -> cardDeck.log();
+                case HARDEST -> cardDeck.printHardestCard();
+                case RESET -> cardDeck.resetStats();
                 case EXIT -> System.out.println("Bye Bye!");
             }
-
         } while (cardDeck.isRunning());
     }
 }

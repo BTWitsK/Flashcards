@@ -11,7 +11,7 @@ public class FlashCards {
         ASK("ask"),
         EXIT("exit");
 
-        String userChoice;
+        final String userChoice;
 
         Menu(String userChoice) {
             this.userChoice = userChoice;
@@ -19,8 +19,8 @@ public class FlashCards {
     }
 
     private Scanner scanner = new Scanner(System.in);
-    private LinkedHashMap<String, String> cardMap = new LinkedHashMap<>();
-    private LinkedHashMap<String, String> keyMap = new LinkedHashMap<>();
+    private final LinkedHashMap<String, String> cardMap = new LinkedHashMap<>();
+    private final LinkedHashMap<String, String> keyMap = new LinkedHashMap<>();
     private Menu state;
 
     public void setMenu(String input) {
@@ -29,6 +29,10 @@ public class FlashCards {
                 this.state = state;
             }
         }
+    }
+
+    public Menu getState() {
+        return state;
     }
 
     public boolean isRunning() {
@@ -46,13 +50,13 @@ public class FlashCards {
         System.out.println("The definition of the card:");
         String definition = scanner.nextLine();
         if (cardMap.containsValue(definition)) {
-            System.out.printf("The definition \"%s\" already exists.\n\n", term);
+            System.out.printf("The definition \"%s\" already exists.\n\n", definition);
             return;
         }
 
         cardMap.put(term , definition);
         keyMap.put(definition, term);
-        System.out.printf("The pair (\"%s\":\"%s\") has been added.\n", term, definition);
+        System.out.printf("The pair (\"%s\":\"%s\") has been added.\n\n", term, definition);
     }
 
     public void removeCard() {
@@ -72,7 +76,7 @@ public class FlashCards {
         try {
             scanner = new Scanner(new FileReader(scanner.nextLine()));
             while (scanner.hasNext()) {
-                String[] card = scanner.nextLine().split("\\|");
+                String[] card = scanner.nextLine().split("\\.");
                 cardMap.put(card[0], card[1]);
                 keyMap.put(card[1], card[0]);
                 cardCount++;
@@ -90,7 +94,7 @@ public class FlashCards {
         try (PrintWriter outputFile = new PrintWriter(scanner.nextLine())) {
             int cardCount = 0;
             for (var card : cardMap.entrySet()) {
-                outputFile.printf("%s | %s\n", card.getKey(), card.getValue());
+                outputFile.printf("%s.%s\n", card.getKey(), card.getValue());
                 cardCount++;
             }
             System.out.printf("%d cards have been saved.\n\n", cardCount);
@@ -106,21 +110,23 @@ public class FlashCards {
         int i = 0;
         String answer;
 
-        for (var entry : cardMap.entrySet()) {
-            if (i < rounds) {
-                System.out.printf("Print the definition of \"%s\":\n", entry.getKey());
-                answer = scanner.nextLine();
+        do {
+            for (var entry : cardMap.entrySet()) {
+                if (i < rounds) {
+                    System.out.printf("Print the definition of \"%s\":\n", entry.getKey());
+                    answer = scanner.nextLine();
 
-                if (entry.getValue().equals(answer)) {
-                    System.out.println("Correct!");
-                } else if (cardMap.containsValue(answer)) {
-                    System.out.printf("Wrong. The right answer is \"%s\", but your definition is correct for \"%s\".\n",
-                            entry.getValue(), keyMap.get(answer));
-                } else {
-                    System.out.printf("Wrong. The right answer is \"%s\".\n", entry.getValue());
+                    if (entry.getValue().equals(answer)) {
+                        System.out.println("Correct!");
+                    } else if (cardMap.containsValue(answer)) {
+                        System.out.printf("Wrong. The right answer is \"%s\", but your definition is correct for \"%s\".\n",
+                                entry.getValue(), keyMap.get(answer));
+                    } else {
+                        System.out.printf("Wrong. The right answer is \"%s\".\n", entry.getValue());
+                    }
                 }
+                i++;
             }
-            i++;
-        }
+        } while (i < rounds);
     }
 }

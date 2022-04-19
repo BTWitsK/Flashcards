@@ -24,9 +24,13 @@ public class FlashCards {
     private Scanner scanner = new Scanner(System.in);
     private final LinkedHashMap<String, String> cardMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, String> keyMap = new LinkedHashMap<>();
+    private final StringBuilder log = new StringBuilder();
     private Menu state;
 
-    public void setMenu(String input) {
+    public void setMenu() {
+        print("Input the action (add, remove, import, export, ask exit):\")");
+        String input = userInput();
+
         for (Menu state : Menu.values()) {
             if(state.userChoice.equals(input)) {
                 this.state = state;
@@ -43,89 +47,89 @@ public class FlashCards {
     }
 
     public void addCard() {
-        System.out.println("The card:");
-        String term = scanner.nextLine();
+        print("The card:");
+        String term = userInput();
         if (cardMap.containsKey(term)) {
-            System.out.printf("The card \"%s\" already exists.\n\n", term);
+            print(String.format("The card \"%s\" already exists.\n", term));
             return;
         }
 
-        System.out.println("The definition of the card:");
-        String definition = scanner.nextLine();
+        print("The definition of the card:");
+        String definition = userInput();
         if (cardMap.containsValue(definition)) {
-            System.out.printf("The definition \"%s\" already exists.\n\n", definition);
+            print(String.format("The definition \"%s\" already exists.\n", definition));
             return;
         }
 
         cardMap.put(term , definition);
         keyMap.put(definition, term);
-        System.out.printf("The pair (\"%s\":\"%s\") has been added.\n\n", term, definition);
+        print(String.format("The pair (\"%s\":\"%s\") has been added.\n", term, definition));
     }
 
     public void removeCard() {
-        System.out.println("Which card?");
-        String card = scanner.nextLine();
+        print("Which card?");
+        String card = userInput();
 
         if (null == cardMap.remove(card)) {
-            System.out.printf("Can't remove \"%s\": there is no such card.\n\n", card);
+            print(String.format("Can't remove \"%s\": there is no such card.\n", card));
         } else {
-            System.out.println("The card has been removed.");
+            print("The card has been removed.");
         }
     }
 
     public void importCards() {
-        System.out.println("File name:");
+        print("File name:");
         int cardCount = 0;
         try {
-            scanner = new Scanner(new FileReader(scanner.nextLine()));
+            scanner = new Scanner(new FileReader(userInput()));
             while (scanner.hasNext()) {
-                String[] card = scanner.nextLine().split("\\.");
+                String[] card = userInput().split("\\.");
                 cardMap.put(card[0], card[1]);
                 keyMap.put(card[1], card[0]);
                 cardCount++;
             }
-            System.out.printf("%d cards have been loaded.\n\n", cardCount);
+            print(String.format("%d cards have been loaded.\n", cardCount));
             scanner = new Scanner(System.in);
 
         } catch (IOException e) {
-            System.out.println("File not found");
+            print("File not found");
         }
     }
 
     public void exportCards() {
-        System.out.println("File name:");
-        try (PrintWriter outputFile = new PrintWriter(scanner.nextLine())) {
+        print("File name:");
+        try (PrintWriter outputFile = new PrintWriter(userInput())) {
             int cardCount = 0;
             for (var card : cardMap.entrySet()) {
                 outputFile.printf("%s.%s\n", card.getKey(), card.getValue());
                 cardCount++;
             }
-            System.out.printf("%d cards have been saved.\n\n", cardCount);
+            print(String.format("%d cards have been saved.\n", cardCount));
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            print(e.getMessage());
         }
     }
 
     public void getCards() {
-        System.out.println("How many times to ask?");
-        int rounds = Integer.parseInt(scanner.nextLine());
+        print("How many times to ask?");
+        int rounds = Integer.parseInt(userInput());
         int i = 0;
         String answer;
 
         do {
             for (var entry : cardMap.entrySet()) {
                 if (i < rounds) {
-                    System.out.printf("Print the definition of \"%s\":\n", entry.getKey());
-                    answer = scanner.nextLine();
+                    print(String.format("Print the definition of \"%s\":\n", entry.getKey()));
+                    answer = userInput();
 
                     if (entry.getValue().equals(answer)) {
-                        System.out.println("Correct!");
+                        print("Correct!");
                     } else if (cardMap.containsValue(answer)) {
-                        System.out.printf("Wrong. The right answer is \"%s\", but your definition is correct for \"%s\".\n",
-                                entry.getValue(), keyMap.get(answer));
+                        print(String.format("Wrong. The right answer is \"%s\", but your definition is correct for \"%s\".\n",
+                                entry.getValue(), keyMap.get(answer)));
                     } else {
-                        System.out.printf("Wrong. The right answer is \"%s\".\n", entry.getValue());
+                        print(String.format("Wrong. The right answer is \"%s\".\n", entry.getValue()));
                     }
                 }
                 i++;
@@ -133,8 +137,26 @@ public class FlashCards {
         } while (i < rounds);
     }
 
+    public String userInput() {
+        String input = scanner.nextLine();
+        log.append(input);
+        return input;
+    }
+
+    public void print(String input) {
+        String output = String.format("%s\n", input);
+        log.append(output);
+        System.out.print(output);
+    }
+
     public void log() {
-        //TODO: implement
+        System.out.println("File name:");
+        try (PrintWriter logFile = new PrintWriter(scanner.nextLine())) {
+            logFile.print(log);
+            System.out.println("The log has been saved.");
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void printHardestCard() {

@@ -1,15 +1,11 @@
 package flashcards;
-import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
         FlashCards cardDeck = new FlashCards();
 
         do {
-            System.out.println("Input the action (add, remove, import, export, ask exit):");
-            cardDeck.setMenu(scanner.nextLine());
-
+            cardDeck.setMenu();
             switch (cardDeck.getState()) {
                 case ADD -> cardDeck.addCard();
                 case REMOVE -> cardDeck.removeCard();

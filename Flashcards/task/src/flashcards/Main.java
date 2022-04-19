@@ -2,7 +2,7 @@ package flashcards;
 
 public class Main {
     public static void main(String[] args) {
-        FlashCards cardDeck = new FlashCards();
+        FlashCards cardDeck = new FlashCards(args);
 
         do {
             cardDeck.setMenu();

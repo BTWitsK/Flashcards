@@ -22,19 +22,35 @@ public class FlashCards {
     }
 
     FlashCards(String[] args) {
-        HashMap<String, String> argMap = new HashMap<>();
         for (int i = 0; i < args.length; i += 2) {
             argMap.put(args[i], args[i + 1]);
         }
 
+        if (argMap.containsKey("-import")) {
+            int cardCount = 0;
+            try {
+                scanner = new Scanner(new FileReader(argMap.get("-import")));
+                while (scanner.hasNext()) {
+                    String[] card = userInput().split("\\.");
+                    cardMap.put(card[0], card[1]);
+                    keyMap.put(card[1], card[0]);
+                    errorMap.put(card[0], Integer.parseInt(card[2]));
+                    cardCount++;
+                }
+                print(String.format("%d cards have been loaded.\n", cardCount));
+                scanner = new Scanner(System.in);
 
-
+            } catch (IOException e) {
+                print("File not found");
+            }
+        }
     }
 
     private Scanner scanner = new Scanner(System.in);
     private final LinkedHashMap<String, String> cardMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, String> keyMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, Integer> errorMap = new LinkedHashMap<>();
+    private final HashMap<String, String> argMap = new HashMap<>();
     private final StringBuilder log = new StringBuilder();
     private Menu state;
 
@@ -86,6 +102,25 @@ public class FlashCards {
             print(String.format("Can't remove \"%s\": there is no such card.\n", card));
         } else {
             print("The card has been removed.");
+        }
+    }
+
+    public void exit() {
+        if (argMap.containsKey("-export")) {
+            try (PrintWriter outputFile = new PrintWriter(argMap.get("-export"))) {
+                int cardCount = 0;
+                for (var card : cardMap.entrySet()) {
+                    outputFile.printf("%s.%s.%d\n", card.getKey(), card.getValue(), errorMap.get(card.getKey()));
+                    cardCount++;
+                }
+                print(String.format("%d cards have been saved.\n", cardCount));
+                print("Bye Bye!");
+
+            } catch (IOException e) {
+                print(e.getMessage());
+            }
+        } else {
+            print("Bye Bye!");
         }
     }
 
@@ -155,7 +190,7 @@ public class FlashCards {
 
     public String userInput() {
         String input = scanner.nextLine();
-        log.append(input);
+        log.append(input).append("\n");
         return input;
     }
 
@@ -170,6 +205,7 @@ public class FlashCards {
         try (PrintWriter logFile = new PrintWriter(userInput())) {
             logFile.print(log);
             print("The log has been saved.\n");
+            System.out.print(log);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

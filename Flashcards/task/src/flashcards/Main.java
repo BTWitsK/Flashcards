@@ -15,7 +15,7 @@ public class Main {
                 case LOG -> cardDeck.log();
                 case HARDEST -> cardDeck.printHardestCard();
                 case RESET -> cardDeck.resetStats();
-                case EXIT -> System.out.println("Bye Bye!");
+                case EXIT -> cardDeck.exit();
             }
         } while (cardDeck.isRunning());
     }
